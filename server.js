@@ -12,20 +12,20 @@ app.get("/books", async (req, res) => {
       res.status(200).send(book);
     })
     .catch((err) => {
-      return res.status(400).send("cannot get the books");
+      return res.status(404).send("cannot get the books");
     });
 });
 
 app.post("/books", async (req, res) => {
   const { title, author, price, publishedDate } = req.body;
   if (!title || !author || !price || !publishedDate) {
-    res.status(500).send("Enter all details");
+    return res.status(500).send("Enter all details");
   }
   const newBook = new Book({ title, author, price, publishedDate });
   await newBook
     .save()
     .then(() => {
-      res.status(200).send("saved");
+      res.status(201).send("saved");
     })
     .catch((err) => {
       res.status(500).send("cannot save the book");
@@ -42,21 +42,22 @@ app.put("/books/:id", async (req, res) => {
   );
   try {
     if (!upd) {
-      return res.status(500) / send("cannot find the book");
+      return res.status(404).send("cannot find the book");
     }
     res.status(200).send("updated");
   } catch (err) {
     res.status(500).send("cannot find the book and update");
   }
 });
+
 app.delete("/books/:id", async (req, res) => {
   const id = req.params.id;
   const del = await Book.findByIdAndDelete(id);
   try {
     if (!del) {
-      return res.status(500).send("cannot find the book");
+      return res.status(404).send("cannot find the book");
     }
-    res.status(300).send("deleted");
+    res.status(200).send("deleted");
   } catch (err) {
     res.status(500).send("cannot find the book and delete");
   }
